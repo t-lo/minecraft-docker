@@ -1,0 +1,11 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+
+spawn /minecraft-server/start.sh
+
+expect {
+"For help, type" {puts "Server started, quitting..."}
+}
+sleep 3
+exit 0
