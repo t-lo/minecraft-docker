@@ -5,10 +5,14 @@ Uses
 * Forge version 36.2.34
 * Pixelmon version 9.0.2
 
-Included are `Dockerfile`s for building the images as well as wrapper scripts for running.
-The wrapper scripts use volume mounts from their respective local directory for world data and configuration for convenient backup.
+## Client
+
+There's an installer script at `client/install-client.sh` which guides through local set-up of the minecraft pixelmon client.
 
 ## Server
+
+Included is a `Dockerfile` for building the image from scratch as well as wrapper scripts for running it.
+The wrapper scripts use volume mounts from their respective local directory for world data and configuration for convenient backup.
 
 You don't actually need a server if you only want to play locally (including local multiplayer).
 It's handy though if you want to play over the internet from multiple locations.
