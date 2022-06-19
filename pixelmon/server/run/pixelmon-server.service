@@ -1,0 +1,10 @@
+[Unit]
+Description=Minecraft Pixelmon server
+
+[Service]
+Restart=always
+WorkingDirectory=/opt/pixelmon-server
+ExecStart=/opt/pixelmon-server/pixelmon-server.sh
+
+[Install]
+WantedBy=multi-user.target
