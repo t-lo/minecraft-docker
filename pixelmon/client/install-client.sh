@@ -7,6 +7,14 @@ function banner() {
     printf "##%${num}s##\n" | tr ' ' '#'
 }
 
+launcher_bin="$HOME/.minecraft/launcher/minecraft-launcher"
+forge_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.16.5-36.2.34/forge-1.16.5-36.2.34-installer.jar"
+forge_download_dest"$HOME/Downloads/forge-1.16.5-36.2.34-installer.jar"
+forge_install_check_dest="$HOME/.minecraft/versions/1.16.5-forge-36.2.34/1.16.5-forge-36.2.34.jar"
+
+pixelmon_url="https://download.nodecdn.net/containers/reforged/universal/release/Pixelmon-1.16.5-9.0.2-universal.jar"
+pixelmon_install_dest="$HOME/.minecraft/mods/Pixelmon-1.16.5-9.0.2-universal.jar"
+
 
 banner "Minecraft pixelmon client first-run setup"
 echo
@@ -42,8 +50,6 @@ if ! java -version 2>&1 | grep 'build 1.8.0' ; then
     exit
 fi
 
-launcher_bin="$HOME/.minecraft/launcher/minecraft-launcher"
-
 if [ ! -x "$launcher_bin" ] ; then
     echo
     echo "Minecraft launcher is missing."
@@ -69,26 +75,29 @@ echo
 echo "Press <return> to continue."
 read JUNK
 
-cd $HOME/Downloads
-if [ ! -f "$HOME/Downloads/forge-1.16.5-36.2.34-installer.jar" ] ; then
-    wget -O "$HOME/Downloads/forge-1.16.5-36.2.34-installer.jar" \
-        https://maven.minecraftforge.net/net/minecraftforge/forge/1.16.5-36.2.34/forge-1.16.5-36.2.34-installer.jar
+if [ -f "$forge_install_check_dest" ] ; then
+    echo "Forge already installed, skipping step 3. and continuing to step 4."
+    echo
+else
+    if [ ! -f "$forge_download_dest" ] ; then
+        wget -O "$forge_download_dest" "$forge_url"
+    else
+        echo "Forge jar found at '$forge_download_dest', using that."
+    fi
+    java -jar "$forge_download_dest"
+
+    banner "Step 3: Set up Forge"
+    echo
+    echo " In order for Forge to initialise, it must be started"
+    echo "   from the minecraft launcher. We'll start the launcher for this."
+    echo " In the launcher, log in, then make sure 'Forge' is selected, and hit 'play'."
+    echo " Quit the game (and the launcher) from the main Minecraft screen to continue."
+    echo
+    echo "Press <return> to continue."
+    read JUNK
+
+    $launcher_bin
 fi
-
-java -jar "$HOME/Downloads/forge-1.16.5-36.2.34-installer.jar"
-
-
-banner "Step 3: Set up Forge"
-echo
-echo " In order for Forge to initialise, it must be started"
-echo "   from the minecraft launcher. We'll start the launcher for this."
-echo " In the launcher, log in, then make sure 'Forge' is selected, and hit 'play'."
-echo " Quit the game (and the launcher) from the main Minecraft screen to continue."
-echo
-echo "Press <return> to continue."
-read JUNK
-
-$launcher_bin
 
 banner "Step 4: Install the pixelmon mod."
 echo
@@ -102,10 +111,15 @@ echo "Press <return> to continue."
 read JUNK
 
 
-cd "$HOME/.minecraft/mods"
-wget https://download.nodecdn.net/containers/reforged/universal/release/Pixelmon-1.16.5-9.0.2-universal.jar
+if [ -f "$pixelmon_install_dest" ] ; then
+    echo "Pixelmon already installed, skipping step 4."
+    echo
+else
+    wget -O "$pixelmon_install_dest" "$pixelmon_url"
+fi
 
 banner "All done - enjoy Pixelmon!"
 
 echo
 echo " Run '$HOME/.minecraft/launcher/minecraft-launcher' to start."
+echo
