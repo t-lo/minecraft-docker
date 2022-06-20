@@ -108,4 +108,4 @@ wget https://download.nodecdn.net/containers/reforged/universal/release/Pixelmon
 banner "All done - enjoy Pixelmon!"
 
 echo
-echo " Run '$HOME/.minecraft/launcher/minecraft-launcher' to start.
+echo " Run '$HOME/.minecraft/launcher/minecraft-launcher' to start."
