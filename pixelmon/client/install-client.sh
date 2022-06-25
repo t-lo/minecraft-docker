@@ -9,7 +9,7 @@ function banner() {
 
 launcher_bin="$HOME/.minecraft/launcher/minecraft-launcher"
 forge_url="https://maven.minecraftforge.net/net/minecraftforge/forge/1.16.5-36.2.34/forge-1.16.5-36.2.34-installer.jar"
-forge_download_dest"$HOME/Downloads/forge-1.16.5-36.2.34-installer.jar"
+forge_download_dest="$HOME/Downloads/forge-1.16.5-36.2.34-installer.jar"
 forge_install_check_dest="$HOME/.minecraft/versions/1.16.5-forge-36.2.34/1.16.5-forge-36.2.34.jar"
 
 pixelmon_url="https://download.nodecdn.net/containers/reforged/universal/release/Pixelmon-1.16.5-9.0.2-universal.jar"
