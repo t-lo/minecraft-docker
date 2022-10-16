@@ -1,0 +1,10 @@
+[Unit]
+Description=Minecraft JuicyRaspberryPie server
+
+[Service]
+Restart=always
+WorkingDirectory=/opt/
+ExecStart=/opt/minecraft-juicyraspberrypie/mc-juicy.sh
+
+[Install]
+WantedBy=multi-user.target
