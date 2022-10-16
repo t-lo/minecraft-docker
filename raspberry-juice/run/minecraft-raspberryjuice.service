@@ -1,0 +1,10 @@
+[Unit]
+Description=Minecraft RaspberryJuice server
+
+[Service]
+Restart=always
+WorkingDirectory=/opt/
+ExecStart=/opt/minecraft-raspberryjuice/mc-rjuice.sh
+
+[Install]
+WantedBy=multi-user.target
