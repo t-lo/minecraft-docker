@@ -1,0 +1,15 @@
+[Unit]
+Description=Minecraft Neoforge Direwolf server
+
+[Service]
+Restart=always
+WorkingDirectory=/opt/direwolf-server
+StandardInput=file:/run/direwolf-cmd
+
+ExecStartPre=mkfifo --mode=0660 /run/direwolf-cmd
+ExecStart=/opt/direwolf-server/start-docker.sh
+ExecStop=/bin/sh -c 'echo "stop" > /run/direwolf-cmd'
+ExecStopPost=/usr/bin/docker stop -t 60 direwolf-server
+
+[Install]
+WantedBy=multi-user.target
