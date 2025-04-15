@@ -59,7 +59,22 @@ For details, refer to [`provisioning.yaml`](provisioning.yaml), which uses
 A pre-transpiled JSON ignition config is available in
 [`provisioning.json`](provisioning.json).
 
-### Local testing
+## Backup and restore
+
+The automation includes simple scripts for backing up and restoring the server.
+These can also be used to move the server to a different instance without losing state.
+
+* `backup.sh <server>` generates a backup.
+  - The minecraft service will be stopped for the backup, and restarted afterwards.
+  - The backup will create a tarball on the server and download it.
+  - The server's `world/`, `backups/`, and whitelist / op / banned configurations will be included.
+  - The backup is performed via SSH and SCP; the automation expects the local
+    ssh client to be configured appropriately (correct keys etc. set in ´~/.ssh/config`).
+* `restore.sh <tarball> <server>` restores a backup.
+  - The minecraft service will be stopped for the restore, and restarted afterwards.
+  - **All remote state on `<server>` will be deleted before restoring.**
+
+## Local testing
 
 Using Flatcar's qemu release, the above can be tested locally.
 
@@ -79,6 +94,12 @@ Now start a local qemu VM using the wrapper script, pass the provisioning config
 ```
 The above grants the VM 8GM of host memory; this should be the minimum for testing as the server is rather memory hungry.
 
+**NOTE**: The `-snapshot` option will start qemu in ephemeral mode.
+No changes will ever be written to the disk image.
+After the VM is shut down, _everything_ in the VM will be lost.
+(It comes in handy for testing deployments though, as the disk image remains
+ pristine and can be re-used indefinitely.)
+
 After start-up, the container image will be built, then started.
 You can follow the container build process via the serial console:
 ```
@@ -94,3 +115,23 @@ As soon as the server is ready, you can connect clients to the local VM (use
 `localhost` or `127.0.0.1` as server address).
 If your host's firewall allows, you can even connect clients remotely via the
 local network your host system is in.
+
+The qemu wrapper `./flatcar_production_qemu_uefi.sh` tries to auto-detect SSH
+keys and will add local public keys to the VM automatically.
+It will open an SSH port forward on the host on port 2222.
+You can SSH into the vm via `ssh -p 2222 core@localhost`.
+
+
+In order to test `backup.sh` and `restore.sh` we need to add a configuration
+snippet for the test VM to `~/.ssh/config`:
+```
+host flatcar-vm
+user core
+hostname localhost
+port 2222
+```
+
+This should now work:
+* `backup.sh flatcar-vm`
+  (make note of backup file name for restore)
+* `restore.sh <backup-file> flatcar-vm`
