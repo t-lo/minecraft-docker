@@ -1,0 +1,80 @@
+# Flatcar provisioning automation for direwolf minecraft server.
+# Re-create JSON after changing this file:
+#
+#   cat provisioning.yaml | docker run --rm  -v "$(pwd)":/files -i quay.io/coreos/butane:latest --files-dir /files > provisioning.json
+#
+# Don't forget to allow-list TCP ports 25565 and 25575 if you run in a firewalled environment.
+
+variant: flatcar
+version: 1.0.0
+passwd:
+  users:
+    - name: direwolf
+      uid: 2000
+      groups:
+        - docker
+storage:
+  directories:
+    - path: /opt/direwolf-server
+      user:
+        name: direwolf
+      group:
+        name: direwolf
+  files:
+    - path: /opt/direwolf-server/Dockerfile
+      mode: 0755
+      contents:
+        local: Dockerfile
+      user:
+        name: direwolf
+      group:
+        name: direwolf
+    - path: /opt/direwolf-server/build.sh
+      mode: 0755
+      contents:
+        local: build.sh
+      user:
+        name: direwolf
+      group:
+        name: direwolf
+    - path: /opt/direwolf-server/entry.sh
+      mode: 0755
+      contents:
+        local: entry.sh
+      user:
+        name: direwolf
+      group:
+        name: direwolf
+    - path: /opt/direwolf-server/start-docker.sh
+      mode: 0755
+      contents:
+        local: start-docker.sh
+      user:
+        name: direwolf
+      group:
+        name: direwolf
+    - path: /etc/systemd/system/build-direwolf-container.service
+      mode: 0644
+      contents:
+        local: build-direwolf-container.service
+    - path: /etc/systemd/system/direwolf-server.service
+      mode: 0644
+      contents:
+        local: direwolf-server.service
+    - path: /etc/systemd/system/direwolf-server.socket
+      mode: 0644
+      contents:
+        local: direwolf-server.socket
+
+systemd:
+  units:
+    - name: build-direwolf-container.service
+      enabled: true
+    - name: direwolf-server.service
+      enabled: true
+
+    # Disable automated updates
+    - name: update-engine.service
+      mask: true
+    - name: locksmithd.service
+      mask: true

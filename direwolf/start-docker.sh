@@ -21,10 +21,16 @@ docker container rm --force  direwolf-server 2>/dev/null
 xms="$((system_ram_kb * 2 / 3))"
 xmx="$((system_ram_kb * 9 / 10))"
 
+user="$(id -u)"
+group="$(id -g)" 
+
+mkdir -p data
+
 set -x
 exec docker run -i --name direwolf-server \
                 -p 25565:25565 \
                 -p 25575:25575 \
+                --user "$user":"$group" \
                 -v $(pwd)/data:/minecraft-server-data/ \
                 --env USER_JVM_ARGS="-Xms${xms}k -Xmx${xmx}k" \
                 direwolf:"$VERSION" \

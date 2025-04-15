@@ -1,0 +1,17 @@
+[Unit]
+Description=Minecraft Neoforge Direwolf Container Builder
+ConditionPathExists=!/opt/direwolf-server/.container-build-success
+
+[Service]
+User=direwolf
+Group=direwolf
+Type=oneshot
+Restart=on-failure
+RemainAfterExit=true
+WorkingDirectory=/opt/direwolf-server
+
+ExecStart=/opt/direwolf-server/build.sh
+ExecStartPost=/usr/bin/touch /opt/direwolf-server/.container-build-success
+
+[Install]
+WantedBy=multi-user.target

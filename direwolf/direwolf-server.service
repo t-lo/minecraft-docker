@@ -1,14 +1,22 @@
 [Unit]
 Description=Minecraft Neoforge Direwolf server
+After=build-direwolf-container.service direwolf-server.socket
+Requires=build-direwolf-container.service direwolf-server.socket
+PartOf=build-direwolf-container.service
 
 [Service]
-Restart=always
-WorkingDirectory=/opt/direwolf-server
-StandardInput=file:/run/direwolf-cmd
+User=direwolf
+Group=direwolf
+Restart=on-failure
 
-ExecStartPre=mkfifo --mode=0660 /run/direwolf-cmd
+WorkingDirectory=/opt/direwolf-server
+
+StandardInput=socket
+StandardOutput=journal
+StandardError=journal
+
 ExecStart=/opt/direwolf-server/start-docker.sh
-ExecStop=/bin/sh -c 'echo "stop" > /run/direwolf-cmd'
+ExecStop=/bin/sh -c 'echo -e "\nstop\nstop" > /run/direwolf-cmd'
 ExecStopPost=/usr/bin/docker stop -t 60 direwolf-server
 
 [Install]

@@ -39,5 +39,58 @@ stop
 
 ## Systemd service
 
-A complementary `direwolf-server.service` systemd service unit is included.
-It expects the dorewolf server to be installed in `/opt/direwolf-server`.
+Complementary systemd services for automated build and start are included.
+All services use `/opt/direwolf-server` working directory and run as user
+`direwolf`. `/opt/direwolf-server` must contain `build.sh`, `Dockerfile`,
+`entry.sh`, and `start-docker.sh`.
+* `build-direwolf-container.service` - build the direwolf container.
+* `direwolf-server.service` - start the direwolf container.
+   Requires successful build.
+* `direwolf-server.socket` - Socket unit connecting the direwolf service to `/run/direwolf-cmd`.
+  The socket can be used to interact with the server
+  (`echo <command> > /run/direwolf-cmd`) and is required for graceful shutdown.
+
+## Provisioning automation
+
+A complementary [Flatcar Container Linux](https://www.flatcar.org) provisioning
+automation is included, allowing for zero-touch on-demand deployments.
+For details, refer to [`provisioning.yaml`](provisioning.yaml), which uses
+[butane syntax](provisioning.yaml).
+A pre-transpiled JSON ignition config is available in
+[`provisioning.json`](provisioning.json).
+
+### Local testing
+
+Using Flatcar's qemu release, the above can be tested locally.
+
+First, acquire the latest Flatcar release. Note the below is for the x86-64
+architecture; replace `amd64-usr` with `arm64-usr` for aarch64.
+```
+wget https://alpha.release.flatcar-linux.net/amd64-usr/current/flatcar_production_qemu_uefi.sh
+chmod +x flatcar_production_qemu_uefi.sh
+wget https://stable.release.flatcar-linux.net/amd64-usr/current/flatcar_production_qemu_uefi_image.img
+wget https://stable.release.flatcar-linux.net/amd64-usr/current/flatcar_production_qemu_uefi_efi_code.qcow2
+wget https://stable.release.flatcar-linux.net/amd64-usr/current/flatcar_production_qemu_uefi_efi_vars.qcow2
+```
+
+Now start a local qemu VM using the wrapper script, pass the provisioning config, and forward the relevant ports:
+```
+./flatcar_production_qemu_uefi.sh -i provisioning.json -M 8G -f 25565:25565 -f 25575:25575 -- -nographic -snapshot
+```
+The above grants the VM 8GM of host memory; this should be the minimum for testing as the server is rather memory hungry.
+
+After start-up, the container image will be built, then started.
+You can follow the container build process via the serial console:
+```
+journalctl -f -u build-direwolf-container.service
+```
+
+After the build concluded, you can access the server logs via:
+```
+journalctl -f -u direwolf-server.service
+```
+
+As soon as the server is ready, you can connect clients to the local VM (use
+`localhost` or `127.0.0.1` as server address).
+If your host's firewall allows, you can even connect clients remotely via the
+local network your host system is in.

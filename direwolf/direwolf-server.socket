@@ -1,0 +1,8 @@
+[Unit]
+Description=Minecraft Neoforge Direwolf FIFO -> Socket forward
+
+[Socket]
+SocketUser=direwolf
+SocketGroup=direwolf
+SocketMode=0600
+ListenFIFO=/run/direwolf-cmd

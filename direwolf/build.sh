@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -euo pipefail
+
 # These three are interdependent.
 # See https://www.feed-the-beast.com/modpacks?search=direwolf&sort=release
 # for new releases.
