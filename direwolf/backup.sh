@@ -19,7 +19,8 @@ echo "### Stopping '$service' on '$server'"
 ssh "core@${server}" "sudo systemctl stop $service"
 
 echo "### Creating backup file '$backup_name' on '$server'."
-ssh "core@${server}" "tar czvf ${backup_name} ${backup_paths[@]}"
+ssh "core@${server}" "sudo tar czvf ${backup_name} ${backup_paths[@]}"
+ssh "core@${server}" "sudo chown core:core ${backup_name}"
 
 echo "### Downloading '$backup_name' from '$server'."
 scp "core@${server}:$backup_name" .
