@@ -56,8 +56,11 @@ A complementary [Flatcar Container Linux](https://www.flatcar.org) provisioning
 automation is included, allowing for zero-touch on-demand deployments.
 For details, refer to [`provisioning.yaml`](provisioning.yaml), which uses
 [butane syntax](provisioning.yaml).
-A pre-transpiled JSON ignition config is available in
-[`provisioning.json`](provisioning.json).
+Pre-transpiled JSON ignition configs are available in
+[`provisioning.json`](provisioning.json) and
+[`provisioning-noautostart.json`](provisioning-noautostart.json).
+The latter builds the container but does not start the server, which is handy
+for restoring backups (see below).
 
 ## Backup and restore
 
