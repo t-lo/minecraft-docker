@@ -13,6 +13,34 @@ The mods can be installed either via the FTB Direwolf installer or extracted
 from running the container locally via `start-docker.sh`, which will copy all
 mods to the `data/mods` sub-directory.
 
+## Deploying a server
+
+Servers are ephemeral and can be created from scrath within seconds. 
+
+A complementary [Flatcar Container Linux](https://www.flatcar.org) provisioning automation is included, allowing for zero-touch on-demand deployments.
+For details, refer to [`provisioning.yaml`](provisioning.yaml), which uses [butane syntax](provisioning.yaml).
+
+Pre-transpiled JSON ignition configs are available in [`provisioning.json`](provisioning.json) and [`provisioning-noautostart.json`](provisioning-noautostart.json).
+The latter builds the container but does not start the server, which is handy for restoring backups (see below).
+
+The JSON configuration is to be passed via your cloud's user data / custom data, and will create a full server from scratch.
+After a session concludes, the server can be torn down and, assuming a game data backup has been made, re-created on demand.
+
+## Backup and restore
+
+The automation includes simple scripts for backing up and restoring the server.
+These can also be used to move the server to a different instance without losing state.
+
+* `backup.sh <server>` generates a backup.
+  - The minecraft service will be stopped for the backup, and restarted afterwards.
+  - The backup will create a tarball on the server and download it.
+  - The server's `world/`, `backups/`, and whitelist / op / banned configurations will be included.
+  - The backup is performed via SSH and SCP; the automation expects the local
+    ssh client to be configured appropriately (correct keys etc. set in ´~/.ssh/config`).
+* `restore.sh <tarball> <server>` restores a backup.
+  - The minecraft service will be stopped for the restore, and restarted afterwards.
+  - **All remote state on `<server>` will be deleted before restoring.**
+
 ## Building
 
 Run
@@ -49,33 +77,6 @@ All services use `/opt/direwolf-server` working directory and run as user
 * `direwolf-server.socket` - Socket unit connecting the direwolf service to `/run/direwolf-cmd`.
   The socket can be used to interact with the server
   (`echo <command> > /run/direwolf-cmd`) and is required for graceful shutdown.
-
-## Provisioning automation
-
-A complementary [Flatcar Container Linux](https://www.flatcar.org) provisioning
-automation is included, allowing for zero-touch on-demand deployments.
-For details, refer to [`provisioning.yaml`](provisioning.yaml), which uses
-[butane syntax](provisioning.yaml).
-Pre-transpiled JSON ignition configs are available in
-[`provisioning.json`](provisioning.json) and
-[`provisioning-noautostart.json`](provisioning-noautostart.json).
-The latter builds the container but does not start the server, which is handy
-for restoring backups (see below).
-
-## Backup and restore
-
-The automation includes simple scripts for backing up and restoring the server.
-These can also be used to move the server to a different instance without losing state.
-
-* `backup.sh <server>` generates a backup.
-  - The minecraft service will be stopped for the backup, and restarted afterwards.
-  - The backup will create a tarball on the server and download it.
-  - The server's `world/`, `backups/`, and whitelist / op / banned configurations will be included.
-  - The backup is performed via SSH and SCP; the automation expects the local
-    ssh client to be configured appropriately (correct keys etc. set in ´~/.ssh/config`).
-* `restore.sh <tarball> <server>` restores a backup.
-  - The minecraft service will be stopped for the restore, and restarted afterwards.
-  - **All remote state on `<server>` will be deleted before restoring.**
 
 ## Local testing
 
